@@ -1,39 +1,44 @@
+import { setIn } from '@gem-mine/immutable'
 import { dispatch, getState } from './middleware'
 import { options } from './defaults'
-import { setIn } from '@gem-mine/immutable'
+import { ModelReducers } from './types/model'
+import { ReducersMapObject } from './types/reducers'
+import { Effects } from './types/effects'
 
 const SEP = '/'
 
+export interface Actions {
+  [modelName: string]: {
+    [name: string]: (data: any) => void
+  }
+}
+
 // 存放所有的 action，此 action 非 redux action 存放结构如下： {namespace: {actionName:
 // actionCreator}}
-export const actions = {}
+export const actions: Actions = {}
 
-export function addActions(modelName, reducers = {}, effects = {}) {
+export function addActions(modelName: string, reducers: ModelReducers = {}, effects: Effects = {}) {
   // 在 actions 中挂载命名空间
   if (Object.keys(reducers).length || Object.keys(effects).length) {
     actions[modelName] = actions[modelName] || {}
   }
 
   // 把 reducers 挂到 actions 中对应的命名空间里
-  each(reducers, actionName => {
+  each(reducers, (reducerName: string) => {
     // A single-argument function, whose argument is the payload data of a normal
     // redux action, and also the `data` param of corresponding method defined in
     // model.reducers.
-    actions[modelName][actionName] = actionCreator(modelName, actionName)
+    actions[modelName][reducerName] = actionCreator(modelName, reducerName)
   })
 
   // 把 effects 也挂载到 actions 中对应的命名空间里
   const scope = {
     actions: actions[modelName],
-    setField: data => {
-      return scope.actions.setField(data)
-    },
-    getState: () => {
-      return getState()[modelName]
-    }
+    setField: (data) => scope.actions.setField(data),
+    getState: () => getState()[modelName]
   }
 
-  each(effects, effectName => {
+  each(effects, (effectName: string) => {
     if (actions[modelName][effectName]) {
       throw new Error(`Action name "${effectName}" has been used! Please select another name as effect name!`)
     }
@@ -54,24 +59,25 @@ export function addActions(modelName, reducers = {}, effects = {}) {
  * @param {String} modelName
  * @param {Object<String, function>} reducers
  */
-export function resolveReducers(modelName, reducers = {}) {
+export function resolveReducers(
+  modelName: string,
+  reducers: ModelReducers = {}
+): ReducersMapObject {
   return Object.keys(reducers).reduce((acc, cur) => {
-    acc[`${modelName}${SEP}${cur}`] = function (state, data) {
-      return reducers[cur].bind({
-        setField: data => {
-          return setIn(state, data)
-        },
-        getState: () => {
-          return state
-        }
-      })(data, getState)
-    }
+    acc[`${modelName}${SEP}${cur}`] = (state, data) => reducers[cur].bind({
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      setField: (data) => setIn(state, data),
+      getState: () => state
+    })(data)
 
     return acc
   }, {})
 }
 
-function each(obj, callback) {
+function each(
+  obj: ReducersMapObject | Effects,
+  callback: (name: string) => void
+) {
   Object.keys(obj).forEach(callback)
 }
 
@@ -81,8 +87,6 @@ function each(obj, callback) {
  * @param {String} modelName 命名空间，是 model 的 name 字段
  * @param {String} actionName action name，是 model 中 reduces 或者 effects 的 key
  */
-function actionCreator(modelName, actionName) {
-  return function (data) {
-    return dispatch({ type: `${modelName}${SEP}${actionName}`, data })
-  }
+function actionCreator(modelName: string, actionName: string) {
+  return (data: any) => dispatch({ type: `${modelName}${SEP}${actionName}`, data })
 }

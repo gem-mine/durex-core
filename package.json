@@ -11,36 +11,48 @@
     "email": "caolvchong@gmail.com",
     "name": "洪军钊"
   },
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "babel ./src --out-dir ./lib",
-    "lint": "eslint --ext .js src",
-    "prepublish": "npm run build"
+    "start": "gmsr dev",
+    "dev": "gmsr build --watch",
+    "build": "gmsr build",
+    "lint": "gmsr lint",
+    "lint:fix": "gmsr lint --fix",
+    "test:unit": "gmsr test:unit"
   },
   "files": [
-    "lib"
+    "dist"
   ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
   "dependencies": {
+    "@babel/runtime": "^7.11.4",
     "@gem-mine/immutable": "^1.0.0",
-    "redux": "^4.0.1"
+    "redux": "^4.1.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.0",
-    "babel-eslint": "^8.1.2",
-    "babel-loader": "^6.4.1",
-    "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-plugin-transform-object-assign": "^6.22.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-0": "^6.24.1",
-    "eslint": "^4.14.0",
-    "eslint-config-standard": "^11.0.0-beta.0",
-    "eslint-config-standard-react": "^5.0.0",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-node": "^5.2.1",
-    "eslint-plugin-promise": "^3.6.0",
-    "eslint-plugin-react": "^7.5.1",
-    "eslint-plugin-standard": "^3.0.1"
+    "@gem-mine/babel-preset-app": "^3.2.4",
+    "@gem-mine/cli-plugin-eslint": "^3.3.7",
+    "@gem-mine/cli-plugin-jest": "^1.6.8",
+    "@gem-mine/cli-plugin-typescript": "^3.0.3",
+    "@gem-mine/eslint-config-recommend-ts": "^4.0.2",
+    "@gem-mine/script-rollup": "^2.4.1",
+    "@types/jest": "^26.0.19",
+    "eslint": "^7.5.0",
+    "husky": "^2.7.0",
+    "jest": "^26.6.3",
+    "lint-staged": "^7.2.2",
+    "ts-jest": "^26.4.4",
+    "ts-node": "^10.0.0",
+    "typescript": "~4.0.5"
   }
 }

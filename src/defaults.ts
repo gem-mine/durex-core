@@ -1,6 +1,9 @@
 import { effects, addEffect } from './effects'
+import { Options, UserOptions } from './types/default'
+import { Reducer, ReducersMapObject } from './types/reducers'
+import { Middleware } from './types/middleware'
 
-export const options = {
+export const options: Options = {
   // global initial state
   // state: undefined,
 
@@ -17,20 +20,23 @@ export const options = {
   reducers: {},
 
   // An overwrite of the existing effect handler
-  addEffect: addEffect(effects)
+  addEffect: addEffect(effects),
+
+  initialState: {},
 }
 
-const isObject = target => Object.prototype.toString.call(target) === '[object Object]'
+const isObject = (target: ReducersMapObject) => Object.prototype.toString.call(target) === '[object Object]'
 
-export function addReducer(reducer) {
+export function addReducer(reducer: Reducer) {
   Object.assign(options.reducers, reducer)
 }
 
-export function addMiddleware(middleware) {
+export function addMiddleware(middleware: Middleware) {
   options.middlewares.push(middleware)
 }
 
-export default function defaults(opts = {}) {
+export default function defaults(opts: UserOptions) {
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   const { middlewares, reducers, addEffect } = opts
 
   if (middlewares && !Array.isArray(middlewares)) {
@@ -50,7 +56,7 @@ export default function defaults(opts = {}) {
     }
   }
 
-  Object.keys(opts).forEach(key => {
+  Object.keys(opts).forEach((key) => {
     if (key === 'reducers') {
       options[key] = {
         ...options[key],

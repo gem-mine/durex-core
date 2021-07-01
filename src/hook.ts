@@ -1,6 +1,8 @@
-export const hooks = []
+export type Subscriber = (action?: {}, getState?: Function) => void
 
-export default function hook(subscriber) {
+export const hooks: Subscriber[] = []
+
+export default function hook(subscriber: Subscriber): () => void {
   if (typeof subscriber !== 'function') {
     throw new Error('Invalid hook, must be a function!')
   }
