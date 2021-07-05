@@ -1,4 +1,9 @@
-export type Subscriber = (action?: {}, getState?: Function) => void
+import { Dispatch } from './types/middleware'
+
+export type Subscriber = (
+  action?: Dispatch extends Dispatch<infer A> ? A : never,
+  getState?: Function
+) => void
 
 export const hooks: Subscriber[] = []
 

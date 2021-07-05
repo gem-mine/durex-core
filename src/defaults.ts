@@ -1,6 +1,6 @@
 import { effects, addEffect } from './effects'
 import { Options, UserOptions } from './types/default'
-import { Reducer, ReducersMapObject } from './types/reducers'
+import { ReducersMapObject } from './types/reducers'
 import { Middleware } from './types/middleware'
 
 export const options: Options = {
@@ -27,7 +27,7 @@ export const options: Options = {
 
 const isObject = (target: ReducersMapObject) => Object.prototype.toString.call(target) === '[object Object]'
 
-export function addReducer(reducer: Reducer) {
+export function addReducer(reducer: ReducersMapObject) {
   Object.assign(options.reducers, reducer)
 }
 
@@ -44,7 +44,7 @@ export default function defaults(opts: UserOptions) {
   }
 
   if (reducers && !isObject(reducers)) {
-    throw new Error(`middlewares "${reducers}" is invalid, must be an Object!`)
+    throw new Error(`reducers "${reducers}" is invalid, must be an Object!`)
   }
 
   if (addEffect) {
@@ -52,7 +52,7 @@ export default function defaults(opts: UserOptions) {
       throw new Error(`addEffect "${addEffect}" is invalid, must be a function that returns a function`)
     } else {
       // create effects handler with initial effects object
-      opts.addEffect = opts.addEffect(effects)
+      opts.addEffect = addEffect(effects)
     }
   }
 
@@ -63,7 +63,7 @@ export default function defaults(opts: UserOptions) {
         ...opts[key]
       }
     } else if (key === 'middlewares') {
-      options[key] = options[key].concat(opts[key])
+      options[key] = options[key].concat(opts[key] as Middleware[])
     } else {
       options[key] = opts[key]
     }

@@ -18,7 +18,7 @@
     "build": "gmsr build",
     "lint": "gmsr lint",
     "lint:fix": "gmsr lint --fix",
-    "test:unit": "gmsr test:unit"
+    "test": "gmsr test:unit"
   },
   "files": [
     "dist"
@@ -52,7 +52,6 @@
     "jest": "^26.6.3",
     "lint-staged": "^7.2.2",
     "ts-jest": "^26.4.4",
-    "ts-node": "^10.0.0",
     "typescript": "~4.0.5"
   }
 }

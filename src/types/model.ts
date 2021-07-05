@@ -8,12 +8,10 @@ export interface Model {
 
 export type State = {
   [k: string]: any
-} | undefined
+} | null
 
 export interface ModelReducers {
-  setField?: Function;
-  resetState?: Function;
-  [k: string]: any;
+  [k: string]: (data?: any, getState?: any) => State;
 }
 
 export interface ModelObj {

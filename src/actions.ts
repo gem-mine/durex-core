@@ -9,7 +9,7 @@ const SEP = '/'
 
 export interface Actions {
   [modelName: string]: {
-    [name: string]: (data: any) => void
+    [name: string]: (data?: any) => void
   }
 }
 

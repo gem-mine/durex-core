@@ -11,15 +11,17 @@ export const models: Model[] = []
 export default function model(m: ModelObj): Model {
   // eslint-disable-next-line no-param-reassign
   m = validateModel(m)
+
   if (!m.reducers) {
     m.reducers = {}
   }
+
   // 为所有 model 的 reducer 注入 setField 方法，这样 可以使用 actions[name].setField
-  m.reducers.setField = function setField(data: State) {
+  m.reducers.setField = function setField(data: State): State {
     return setIn(this.getState(), data)
   }
   // 为所有 model 的 reducer 注入 resetState 方法，这样 可以使用 actions[name].resetState
-  m.reducers.resetState = function resetState() {
+  m.reducers.resetState = function resetState(): State {
     return setIn(this.getState(), m.state)
   }
 
@@ -61,10 +63,10 @@ function validateModel(m: ModelObj) {
   }
 
   if (reducers !== undefined) {
-    m.reducers = filterReducers(reducers)
+    m.reducers = filterReducers<ModelReducers>(reducers)
   }
   if (effects !== undefined) {
-    m.effects = filterReducers(effects)
+    m.effects = filterReducers<Effects>(effects)
   }
 
   return m
@@ -75,8 +77,8 @@ function validateModel(m: ModelObj) {
  * @param {Object} reducers
  * @param {Object} initialState
  */
-// If initialState is not specified, then set it to undefined
-function getReducer(reducers: ReducersMapObject, initialState: State = undefined): Reducer {
+// If initialState is not specified, then set it to null
+function getReducer(reducers: ReducersMapObject, initialState: State = null): Reducer {
   return (state = initialState, action) => {
     if (typeof reducers[action.type] === 'function') {
       return reducers[action.type](state, action.data)
@@ -89,7 +91,7 @@ function getReducer(reducers: ReducersMapObject, initialState: State = undefined
  * 过滤 reducers 或 effects，去掉值非 function 的
  * @param {Object} reducers
  */
-function filterReducers(reducers: ModelReducers | Effects) {
+function filterReducers<T>(reducers: T): T {
   if (!reducers) {
     return reducers
   }
@@ -100,5 +102,6 @@ function filterReducers(reducers: ModelReducers | Effects) {
       acc[action] = reducers[action]
     }
     return acc
-  }, {})
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  }, {} as T)
 }

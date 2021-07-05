@@ -5,7 +5,7 @@ import { options } from './defaults'
 import { models } from './model'
 import createMiddleware from './middleware'
 import { StoreEnhancer } from './types/store'
-import { ReducersMapObject } from './types/reducers'
+import { ReducersMapObject, Reducer } from './types/reducers'
 import { Model } from './types/model'
 
 export default function createStore() {
@@ -29,7 +29,7 @@ export default function createStore() {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-shadow
-function createReducer(models: Model[], reducers: ReducersMapObject) {
+function createReducer(models: Model[], reducers: ReducersMapObject): Reducer {
   const ModelReducers: ReducersMapObject = models.reduce((acc, cur) => {
     acc[cur.name] = cur.reducer
     return acc
