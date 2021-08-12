@@ -38,3 +38,8 @@ function createReducer(models, reducers) {
   })
 }
 
+export function updateStore() {
+  const { reducers } = options
+  const reducer = createReducer(models, reducers)
+  store.replaceReducer(reducer)
+}
