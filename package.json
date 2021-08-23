@@ -1,46 +1,41 @@
 {
-  "name": "@gem-mine/durex-core",
-  "version": "1.0.1",
-  "description": "make redux easy",
-  "keywords": [
-    "redux",
-    "model",
-    "mirror"
-  ],
-  "author": {
-    "email": "caolvchong@gmail.com",
-    "name": "洪军钊"
-  },
-  "main": "lib/index.js",
+  "name": "durex-core-ts",
+  "version": "1.0.0",
   "scripts": {
-    "build": "babel ./src --out-dir ./lib",
-    "lint": "eslint --ext .js src",
-    "prepublish": "npm run build"
+    "build": "gmsr build",
+    "dev": "gmsr build --watch",
+    "lint": "gmsr lint",
+    "lint:fix": "gmsr lint --fix",
+    "start": "gmsr dev",
+    "test:unit": "gmsr test:unit"
   },
-  "files": [
-    "lib"
-  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
   "dependencies": {
     "@gem-mine/immutable": "^1.0.0",
     "redux": "^4.0.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.0",
-    "babel-eslint": "^8.1.2",
-    "babel-loader": "^6.4.1",
-    "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-plugin-transform-object-assign": "^6.22.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-0": "^6.24.1",
-    "eslint": "^4.14.0",
-    "eslint-config-standard": "^11.0.0-beta.0",
-    "eslint-config-standard-react": "^5.0.0",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-node": "^5.2.1",
-    "eslint-plugin-promise": "^3.6.0",
-    "eslint-plugin-react": "^7.5.1",
-    "eslint-plugin-standard": "^3.0.1"
+    "@gem-mine/babel-preset-app": "^2.4.5",
+    "@gem-mine/cli-plugin-eslint": "^3.2.4",
+    "@gem-mine/cli-plugin-jest": "^1.6.1",
+    "@gem-mine/cli-plugin-typescript": "^2.7.0",
+    "@gem-mine/eslint-config-recommend-ts": "^3.1.9",
+    "@gem-mine/script-rollup": "^1.5.1",
+    "@types/jest": "^24.0.23",
+    "eslint": "^7.5.0",
+    "husky": "^2.7.0",
+    "jest": "^24.9.0",
+    "lint-staged": "^7.2.2",
+    "ts-jest": "^24.1.0"
   }
 }

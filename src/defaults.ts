@@ -1,6 +1,10 @@
-import { effects, addEffect } from './effects'
+import type { Middleware, Reducer } from 'redux'
+import { effects, addEffect as defaultAddEffect } from './effects'
+import { isObject, each } from './utils'
 
-export const options = {
+import type { DefaultOptions, Options } from './@types/default'
+
+export const options: Options = {
   // global initial state
   // state: undefined,
 
@@ -17,20 +21,18 @@ export const options = {
   reducers: {},
 
   // An overwrite of the existing effect handler
-  addEffect: addEffect(effects)
+  addEffect: defaultAddEffect(effects)
 }
 
-const isObject = target => Object.prototype.toString.call(target) === '[object Object]'
-
-export function addReducer(reducer) {
+export function addReducer(reducer: Reducer): void {
   Object.assign(options.reducers, reducer)
 }
 
-export function addMiddleware(middleware) {
+export function addMiddleware(middleware: Middleware): void {
   options.middlewares.push(middleware)
 }
 
-export default function defaults(opts = {}) {
+export default function defaults(opts: DefaultOptions): void {
   const { middlewares, reducers, addEffect } = opts
 
   if (middlewares && !Array.isArray(middlewares)) {
@@ -50,7 +52,7 @@ export default function defaults(opts = {}) {
     }
   }
 
-  Object.keys(opts).forEach(key => {
+  each(opts, (key) => {
     if (key === 'reducers') {
       options[key] = {
         ...options[key],

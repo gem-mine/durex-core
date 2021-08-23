@@ -1,60 +1,63 @@
-import { resolveReducers, addActions } from './actions'
 import { setIn } from '@gem-mine/immutable'
+import { Reducer, ReducersMapObject } from 'redux'
 
-export const models = []
+import { resolveReducers, addActions } from './actions'
+import { isObject } from './utils'
 
-export default function model(m) {
-  m = validateModel(m)
+import type { Model, DurexModel } from './@types/model'
+
+export const models: DurexModel[] = []
+
+export default function model(modelObj: Model): DurexModel {
+  const m = validateModel(modelObj)
   if (!m.reducers) {
     m.reducers = {}
   }
   // 为所有 model 的 reducer 注入 setField 方法，这样 可以使用 actions[name].setField
-  m.reducers.setField = function (data, getState) {
+  m.reducers.setField = function setField(data) {
     return setIn(this.getState(), data)
   }
   // 为所有 model 的 reducer 注入 resetState 方法，这样 可以使用 actions[name].resetState
-  m.reducers.resetState = function () {
+  m.reducers.resetState = function resetState() {
     return setIn(this.getState(), m.state)
   }
 
   const reducer = getReducer(resolveReducers(m.name, m.reducers), m.state)
 
-  const _model = {
+  const durexModel: DurexModel = {
     name: m.name,
     reducer
   }
 
-  models.push(_model)
+  models.push(durexModel)
 
   // 挂到 actions 和 effects
   addActions(m.name, m.reducers, m.effects)
 
-  return _model
+  return durexModel
 }
 
-function validateModel(m = {}) {
+function validateModel<T extends Model>(m: T): T {
   const { name, reducers, effects } = m
 
-  const isObject = target => Object.prototype.toString.call(target) === '[object Object]'
-
   if (!name || typeof name !== 'string') {
-    throw new Error(`Model name must be a valid string!`)
+    throw new Error('Model name must be a valid string!')
   }
 
-  if (models.some(item => item.name === name)) {
+  if (models.some((item) => item.name === name)) {
     throw new Error(`Model "${name}" has been created, please select another name!`)
   }
 
   if (reducers !== undefined && !isObject(reducers)) {
-    throw new Error(`Model reducers must be a valid object!`)
+    throw new Error('Model reducers must be a valid object!')
   }
 
   if (effects !== undefined && !isObject(effects)) {
-    throw new Error(`Model effects must be a valid object!`)
+    throw new Error('Model effects must be a valid object!')
   }
 
-  m.reducers = filterReducers(reducers)
-  m.effects = filterReducers(effects)
+  m.reducers = filterReducers(reducers!)
+  m.effects = filterReducers(effects!)
 
   return m
 }
@@ -65,7 +68,7 @@ function validateModel(m = {}) {
  * @param {Object} initialState
  */
 // If initialState is not specified, then set it to null
-function getReducer(reducers, initialState = null) {
+function getReducer(reducers: ReducersMapObject, initialState: any = null): Reducer {
   return (state = initialState, action) => {
     if (typeof reducers[action.type] === 'function') {
       return reducers[action.type](state, action.data)
@@ -78,7 +81,7 @@ function getReducer(reducers, initialState = null) {
  * 过滤 reducers 或 effects，去掉值非 function 的
  * @param {Object} reducers
  */
-function filterReducers(reducers) {
+function filterReducers(reducers: ReducersMapObject): ReducersMapObject {
   if (!reducers) {
     return reducers
   }
